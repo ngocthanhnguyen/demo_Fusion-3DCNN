@@ -66,11 +66,11 @@ def export_predictive_map_folium(predicted, areaId):
       congestion = [congested_location[0] + BOUNDARY_AREA[areaId][0], congested_location[1] + BOUNDARY_AREA[areaId][2]]
       if congestion[0] >= BOUNDARY_AREA[areaId][0] and congestion[0] <= BOUNDARY_AREA[areaId][1] and \
          congestion[1] >= BOUNDARY_AREA[areaId][2] and congestion[1] <= BOUNDARY_AREA[areaId][3]:
-            congested_area = [map.relativeloc2Coordinate([congestion[0]-0.5, congestion[1]-0.5]), \
-                              map.relativeloc2Coordinate([congestion[0]-0.5, congestion[1]+0.5]), \
-                              map.relativeloc2Coordinate([congestion[0]+0.5, congestion[1]+0.5]), \
-                              map.relativeloc2Coordinate([congestion[0]+0.5, congestion[1]-0.5]), \
-                              map.relativeloc2Coordinate([congestion[0]-0.5, congestion[1]-0.5])
+            congested_area = [map.relativeloc2Coordinate([congestion[0]-5, congestion[1]-5]), \
+                              map.relativeloc2Coordinate([congestion[0]-5, congestion[1]+5]), \
+                              map.relativeloc2Coordinate([congestion[0]+5, congestion[1]+5]), \
+                              map.relativeloc2Coordinate([congestion[0]+5, congestion[1]-5]), \
+                              map.relativeloc2Coordinate([congestion[0]-5, congestion[1]-5])
                              ]
             congested_area = Polygon(zip(map.separateCoordinates(congested_area)[0], map.separateCoordinates(congested_area)[1]))
 
@@ -79,21 +79,50 @@ def export_predictive_map_folium(predicted, areaId):
             congested_areas.append(congested_area)
   
   # create dataframe
-  # print(congestion_info)
   df = pandas.DataFrame(congestion_info, columns=['time', 'area_id', 'congested_length'])
   gdf = geopandas.GeoDataFrame(df, geometry=congested_areas)
-  print(gdf.head())
+  # print(gdf.head())
   
-  # dataset with time
-  # dt_index = np.arange(predicted.shape[0])
-  # print(df.congested_length.get_values())
-  # df = pandas.DataFrame(
-         # {'color': df.congested_length.get_values(),
-          # 'opacity': np.random.normal(size=predicted.shape[0])},
-         # index=dt_index)
-  # print(df.head())
+  # prepare styledict
+  opacity = 1
+  areas = np.unique(df.area_id.values).tolist()
+  styledata = {}
+  for area in areas:    
+    congestion_info = []
+    
+    for frameId in range(predicted.shape[0]):
+      try:
+        congested_length = df.loc[(df.area_id == area) & (df.time == frameId)]
+        congested_length = congested_length.congested_length.values[0]
+      except:
+        congested_length = 0
+      
+      congestion_info.append([congested_length, opacity])
+    
+    dfStyle = pandas.DataFrame(congestion_info, columns = ('color', 'opacity'))
+    styledata[area] = dfStyle
+    print(area)
+    print(styledata[area])
+  
+  max_color, min_color, max_opacity, min_opacity = 0, 0, 0, 0
+  for area, data in styledata.items():
+    max_color = max(max_color, data['color'].max())
+    min_color = min(max_color, data['color'].min())
+  
+  from branca.colormap import linear
+  cmap = linear.PuRd_09.scale(min_color, max_color)
+  
+  for area, data in styledata.items():
+      data['color'] = data['color'].apply(cmap)
+      data['opacity'] = data['opacity']
+
+
+  styledict = {
+      area: data.to_dict(orient='index') for area, data in styledata.items()
+  }
+  # print(gdf.to_json())
   
   # create map
-  # map.createHeatMap(gdf, areaId)
+  map.createHeatMap(gdf, styledict, areaId)
 
   

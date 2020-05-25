@@ -40,10 +40,11 @@ class Map:
     m = folium.Map(location=self.relativeloc2Coordinate(MAP['center']), zoom_start=11.5)
     return m
     
-  def createHeatMap(self, gdf, areaId):
+  def createHeatMap(self, gdf, styledict, areaId):
     m = self.createBaseMap()
     g = TimeSliderChoropleth(
-        gdf.to_json()
+        gdf.to_json(),
+        styledict=styledict
     ).add_to(m)
     m.save('00_map_congested_' + str(areaId) + '.html')
     
