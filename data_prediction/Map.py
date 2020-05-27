@@ -76,8 +76,8 @@ class Map:
     m = folium.Map(location=self.relativeloc2Coordinate(MAP['center']['zone' + str(areaId+1)]), zoom_start=12.7)
     return m
     
-  def createPredictiveMap(self, features, areaId, cmap):
-    htmlFile = '00_map_congested_' + str(areaId) + '.html'
+  def createPredictiveMap(self, features, areaId, cmap, outputPath):
+    htmlFile = outputPath + 'folium_map_congested_' + str(areaId) + '.html'
     m = self.createBaseMap(areaId)
     TimestampedGeoJson(
         {'type': 'FeatureCollection',

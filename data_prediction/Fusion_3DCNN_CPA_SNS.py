@@ -18,7 +18,7 @@ WD = {
     'input': {
       'model_weights' : '/mnt/d/00_Backup_Thesis/00_defence/train_mdls_Fusion-3DCNN/6steps_4hours_6steps_4hours/Fusion-3DCNN_CPA/epoch_15000.h5'
       
-      
+      'datetime_data' : '../00_data_output/raster/datetime_data.csv'
     },    
     'output' : {
       'predictive_map' : '../00_data_output/predicted/'
@@ -205,7 +205,7 @@ for areaId in range(len(BOUNDARY_AREA)):
   
   gt_congestion = np.array([0])
   scale_max = max(20, np.max(predicted))  
-  # export_predictive_map_sns(predicted, scale_max, areaId)
+  # export_predictive_map_sns(predicted, scale_max, areaId, WD['output']')
   
-  export_predictive_map_folium(predicted, areaId)
+  export_predictive_map_folium(predicted, areaId, WD['output']['predictive_map'])
   # visualization

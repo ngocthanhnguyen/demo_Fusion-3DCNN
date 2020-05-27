@@ -27,7 +27,7 @@ class SpatiotemporalRasterImageConverter:
     np.savez_compressed(path, seq_raster)
   
   def convert(self, delete=True):
-    input_files = os.listdir(WD['input']['prep_3draster'])
+    input_files = fnmatch.filter(os.listdir(WD['input']['prep_3draster']), '*.npz')
     input_files.sort() 
     
     seq_raster = None

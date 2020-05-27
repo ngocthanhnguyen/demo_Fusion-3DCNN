@@ -18,13 +18,17 @@ class TimeSeries2RasterImageConverter:
     self.dr.read(delimiter='\t')
     data = self.dr.getData()
     data = self._parse_data(data)
-    # print(np.argwhere(data[:, 0] == 20140503002000)[0])
+    
+    datetime_filehandler = open(WD['output']['extract_raster'] + 'datetime_data.csv', 'w')
     
     # convert to raster images and save
     for i in range(num_steps):
       starting_time = self._determine_next_time(starting_time, offset)
       raster_img = self._generate_factor_map(data, starting_time)
       self._dump_factor(WD['output']['extract_raster'] + str(starting_time), raster_img)
+      datetime_filehandler.write(starting_time + '\n')
+      
+    datetime_filehandler.close()
 
   def _parse_data(self, data):
     # datetime

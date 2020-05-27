@@ -45,14 +45,14 @@ def print_preditive_acc(gt, pd):
   error_MAE           = mae(gt_congestion, pd_congestion)
   error_RMSE          = rmse(gt_congestion, pd_congestion)
   
-def export_predictive_map_sns(predicted, scale, areaId):
+def export_predictive_map_sns(predicted, scale, areaId, outputPath):
   for frameId in range(predicted.shape[0]):
     pd = predicted[frameId, :, :, 0].astype(int)
     
     sns.heatmap(pd, vmin=0, vmax=scale, cbar=False, xticklabels=False, yticklabels=False, square=True, cmap='Reds')
-    plt.savefig('00_frame' + str(frameId) + '_' + 'area' + str(areaId) + '.png')
+    plt.savefig(outputPath + 'sns_frame' + str(frameId) + '_' + 'area' + str(areaId) + '.png')
     
-def export_predictive_map_folium(predicted, areaId):
+def export_predictive_map_folium(predicted, areaId, outputPath):
   # prepare map
   map = Map()
   
@@ -84,6 +84,6 @@ def export_predictive_map_folium(predicted, areaId):
   
   # prepare data for predictive map
   geojsonFeatures = map.createGeoJsonFeatures(df, DATETIME)
-  map.createPredictiveMap(geojsonFeatures, areaId, cmap)
+  map.createPredictiveMap(geojsonFeatures, areaId, cmap, outputPath)
 
   
