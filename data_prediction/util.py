@@ -72,9 +72,11 @@ def export_predictive_map_folium(predicted, areaId):
                                    pd[congested_location[0], congested_location[1]], \
                                    congested_loc[0], congested_loc[1]])
   
-    # prepare DataFrame which will be used to draw predictive maps
+  # prepare DataFrame which will be used to draw predictive maps
+  minLength = 50
   df = pandas.DataFrame(congestion_info, columns=['time', 'area_id', 'congested_length', 'lat', 'lon'])
-  cmap = map.createColorSet(df.congested_length.min(), df.congested_length.max())
+  df = df[df['congested_length'] >= minLength]
+  cmap = map.createColorSet(minLength, df.congested_length.max())
   df['color'] = df['congested_length'].apply(cmap)
 
   DATETIME = ['2015-07-01 08:00:00', '2015-07-01 12:00:00', '2015-07-01 16:00:00', \
@@ -82,7 +84,6 @@ def export_predictive_map_folium(predicted, areaId):
   
   # prepare data for predictive map
   geojsonFeatures = map.createGeoJsonFeatures(df, DATETIME)
-  print(geojsonFeatures)
-  map.createPredictiveMap(geojsonFeatures, areaId)
+  map.createPredictiveMap(geojsonFeatures, areaId, cmap)
 
   

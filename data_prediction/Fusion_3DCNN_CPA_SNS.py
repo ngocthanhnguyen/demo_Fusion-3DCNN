@@ -204,8 +204,8 @@ for areaId in range(len(BOUNDARY_AREA)):
     print_preditive_acc(gt, pd)
   
   gt_congestion = np.array([0])
-  scale_max = max(np.max(gt_congestion), np.max(predicted))  
-  export_predictive_map_sns(predicted, scale_max, areaId)
+  scale_max = max(20, np.max(predicted))  
+  # export_predictive_map_sns(predicted, scale_max, areaId)
   
   export_predictive_map_folium(predicted, areaId)
   # visualization

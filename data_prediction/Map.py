@@ -4,6 +4,7 @@ import folium
 import folium.plugins as plugins
 from folium.plugins import TimeSliderChoropleth, TimestampedGeoJson
 from datetime import datetime
+from pathlib import Path
 
 class Map:
   def __init__(self):
@@ -40,6 +41,7 @@ class Map:
   def createColorSet(self, min_length, max_length):
     from branca.colormap import linear
     cmap = linear.Reds_09.scale(min_length, max_length)
+    cmap.caption = 'Congested length (m)'
     return cmap
 
   def createGeoJsonFeatures(self, df, time_array):
@@ -57,9 +59,12 @@ class Map:
               'icon': 'circle',
               'iconstyle':{
                   'fillColor': row['color'],
-                  'fillOpacity': 1,
+                  'fillOpacity': .5,
                   'stroke': 'true',
-                  'radius': 10
+                  'radius': 125,
+                  'opacity' : 1,
+                  'lineCap' : 'square',
+                  'lineJoin' : 'square'
               }
           }
       }
@@ -67,20 +72,17 @@ class Map:
   
     return features
     
-  def createBaseMap(self):
-    m = folium.Map(location=self.relativeloc2Coordinate(MAP['center']), zoom_start=11.5)
+  def createBaseMap(self, areaId):
+    m = folium.Map(location=self.relativeloc2Coordinate(MAP['center']['zone' + str(areaId+1)]), zoom_start=12.7)
     return m
     
-  def createPredictiveMap(self, features, areaId):
-    m = self.createBaseMap()
-    # g = TimeSliderChoropleth(
-    #     gdf.to_json(),
-    #     styledict=styledict,
-
-    # ).add_to(m)
+  def createPredictiveMap(self, features, areaId, cmap):
+    htmlFile = '00_map_congested_' + str(areaId) + '.html'
+    m = self.createBaseMap(areaId)
     TimestampedGeoJson(
         {'type': 'FeatureCollection',
         'features': features}
+        , transition_time=1000
         , period='PT4H'
         , add_last_point=True
         , auto_play=True
@@ -88,9 +90,20 @@ class Map:
         , max_speed=1
         , loop_button=True
         , date_options='YYYY-MM-DD HH:mm:ss'
-        , time_slider_drag_update=True
+        , time_slider_drag_update=False
     ).add_to(m)
-    m.save('00_map_congested_' + str(areaId) + '.html')
+    m.add_child(cmap)
+    m.save(htmlFile)
     
+    self.beautifyDisplay(htmlFile)
+    
+  def beautifyDisplay(self, htmlFile):
+    fileHandler = Path(htmlFile)
+    
+    # to draw circle which correspond to real-life radius
+    fileHandler.write_text(fileHandler.read_text().replace('return new L.circleMarker(latLng, feature.properties.iconstyle)', 'return new L.circle(latLng, feature.properties.iconstyle)'))
+    
+    # change position of cmap
+    fileHandler.write_text(fileHandler.read_text().replace('topright', 'bottomleft'))
   
   
