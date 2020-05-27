@@ -81,12 +81,16 @@ def export_predictive_map_folium(predicted, areaId):
   # create dataframe
   df = pandas.DataFrame(congestion_info, columns=['time', 'area_id', 'congested_length'])
   gdf = geopandas.GeoDataFrame(df, geometry=congested_areas)
-  # print(gdf.head())
+  print(gdf.head())
   
   # prepare styledict
-  opacity = 1
+  datetime_index = pandas.date_range('2016-1-1', periods=6, freq='M')
+  dt_index_epochs = datetime_index.astype(int) // 10**9
+  dt_index = dt_index_epochs.astype('U10')
+
+  opacity = .5
   areas = np.unique(df.area_id.values).tolist()
-  styledata = {}
+  styledata_area = {}
   for area in areas:    
     congestion_info = []
     
@@ -99,22 +103,29 @@ def export_predictive_map_folium(predicted, areaId):
       
       congestion_info.append([congested_length, opacity])
     
-    dfStyle = pandas.DataFrame(congestion_info, columns = ('color', 'opacity'))
-    styledata[area] = dfStyle
-    print(area)
-    print(styledata[area])
+    dfStyle = pandas.DataFrame(congestion_info, columns = ('color', 'opacity'), index=dt_index)
+    styledata_area[area] = dfStyle
+  
+  styledata = {}
+  for record in gdf.index:
+    dfStyle = styledata_area[gdf.area_id.at[record]]
+    styledata[record] = dfStyle
   
   max_color, min_color, max_opacity, min_opacity = 0, 0, 0, 0
   for area, data in styledata.items():
     max_color = max(max_color, data['color'].max())
     min_color = min(max_color, data['color'].min())
   
+  print(min_color, max_color)
   from branca.colormap import linear
-  cmap = linear.PuRd_09.scale(min_color, max_color)
+  cmap = linear.Greens_09.scale(min_color, max_color)
   
   for area, data in styledata.items():
-      data['color'] = data['color'].apply(cmap)
-      data['opacity'] = data['opacity']
+      try:
+        data['color'] = data['color'].apply(cmap)
+        data['opacity'] = data['opacity']
+      except:
+        pass
 
 
   styledict = {

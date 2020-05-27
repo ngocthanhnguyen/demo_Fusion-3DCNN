@@ -44,7 +44,8 @@ class Map:
     m = self.createBaseMap()
     g = TimeSliderChoropleth(
         gdf.to_json(),
-        styledict=styledict
+        styledict=styledict,
+
     ).add_to(m)
     m.save('00_map_congested_' + str(areaId) + '.html')
     
