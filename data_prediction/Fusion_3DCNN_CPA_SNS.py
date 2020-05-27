@@ -6,13 +6,17 @@ from data_config import *
 import seaborn as sns
 from util import *
 
+import os
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
+os.environ["CUDA_VISIBLE_DEVICES"] = ""
+
 #######################
 ## Configure dataset ##
 #######################
 dataset_path = '/mnt/7E3B52AF2CE273C0/Thesis/dataset/dataset/s6_4h_s6_4h'
 WD = {
     'input': {
-      'model_weights' : '/mnt/d/00_Backup_Thesis/00_defence/train_mdls_Fusion-3DCNN/6steps_4hours_6steps_4hours/Fusion-3DCNN_CPA_SNS_075/epoch_15000.h5'
+      'model_weights' : '/mnt/7E3B52AF2CE273C0/Thesis/dataset/source_code/train_mdls_Fusion-3DCNN/6steps_4hours_6steps_4hours/Fusion-3DCNN_CPA/epoch_15000.h5'
       
       
     },    
