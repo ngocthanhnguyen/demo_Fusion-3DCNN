@@ -3,6 +3,7 @@ from data_config import *
 import folium
 import folium.plugins as plugins
 from folium.plugins import TimeSliderChoropleth, TimestampedGeoJson
+from datetime import datetime
 
 class Map:
   def __init__(self):
@@ -36,42 +37,41 @@ class Map:
     location = [x,y]
     return location
 
-  def createColorSet(self, min_color, max_color):
+  def createColorSet(self, min_length, max_length):
     from branca.colormap import linear
-    cmap = linear.Greens_09.scale(min_color, max_color)
+    cmap = linear.Reds_09.scale(min_length, max_length)
     return cmap
 
-  def createGeoJsonFeature(self, feature):
-    print('> Creating GeoJSON features...')
+  def createGeoJsonFeatures(self, df, time_array):
     features = []
     for _, row in df.iterrows():
-        feature = {
-            'type': 'Feature',
-            'geometry': {
-                'type':'Point', 
-                'coordinates':[row['Longitude'],row['Latitude']]
-            },
-            'properties': {
-                'time': row['DatetimeBegin'].date().__str__(),
-                'style': {'color' : row['color']},
-                'icon': 'circle',
-                'iconstyle':{
-                    'fillColor': row['color'],
-                    'fillOpacity': 0.8,
-                    'stroke': 'true',
-                    'radius': 7
-                }
-            }
-        }
-        print(feature)
-        features.append(feature)
+      feature = {
+          'type': 'Feature',
+          'geometry': {
+              'type':'Point', 
+              'coordinates':[row['lon'],row['lat']]
+          },
+          'properties': {
+              'time': str(datetime.strptime(time_array[row['time']], '%Y-%m-%d %H:%M:%S')),
+              'style': {'color' : row['color']},
+              'icon': 'circle',
+              'iconstyle':{
+                  'fillColor': row['color'],
+                  'fillOpacity': 1,
+                  'stroke': 'true',
+                  'radius': 10
+              }
+          }
+      }
+      features.append(feature)
+  
     return features
     
   def createBaseMap(self):
     m = folium.Map(location=self.relativeloc2Coordinate(MAP['center']), zoom_start=11.5)
     return m
     
-  def createHeatMap(self, gdf, features, areaId):
+  def createPredictiveMap(self, features, areaId):
     m = self.createBaseMap()
     # g = TimeSliderChoropleth(
     #     gdf.to_json(),
@@ -81,7 +81,7 @@ class Map:
     TimestampedGeoJson(
         {'type': 'FeatureCollection',
         'features': features}
-        , period='P1M'
+        , period='PT4H'
         , add_last_point=True
         , auto_play=True
         , loop=True
