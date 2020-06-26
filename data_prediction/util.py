@@ -78,9 +78,15 @@ def export_predictive_map_folium(predicted, areaId, outputPath):
   df = df[df['congested_length'] >= minLength]
   cmap = map.createColorSet(minLength, df.congested_length.max())
   df['color'] = df['congested_length'].apply(cmap)
-
-  DATETIME = ['2015-07-01 08:00:00', '2015-07-01 12:00:00', '2015-07-01 16:00:00', \
-              '2015-07-01 20:00:00', '2015-07-02 00:00:00', '2015-07-02 04:00:00']
+  
+  # get predicted timestamps
+  DATETIME = []
+  filehandler = open('./00_data_output/predicted/time.csv', 'r')
+  lines = filehandler.readlines()
+  filehandler.close()
+  for line in lines:
+    DATETIME.append(line.strip())
+  # print('DATETIME:',DATETIME)
   
   # prepare data for predictive map
   geojsonFeatures = map.createGeoJsonFeatures(df, DATETIME)

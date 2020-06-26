@@ -2,7 +2,23 @@
    <body>
       <form action = "http://localhost:5000/uploader" method = "POST" 
          enctype = "multipart/form-data">
-         <input type = "file" name = "file" />
+         <table border=1>
+         <tr>
+           <td> Data file: </td> <td><input type = "file" name = "file" /></td>
+         </tr>
+         <tr>
+           <td> Starting timestamp to look back: </td> <td> <input type = "text" name = "start_time" value="20140503002000" /> </td>
+         </tr>
+         <tr>
+           <td> Number of looking back steps: </td> <td> <input type = "text" name = "num_steps" value="6" /> </td>           
+         </tr>
+         <tr>
+           <td> Number of predictive steps: </td> <td> <input type = "text" name = "predicted_steps" value="6" /> </td>
+         </tr>
+         <tr>
+           <td> Delta between time steps: </td> <td> <input type = "text" name = "offset" value="40000" /> </td>
+         </tr>
+         </table>
          <input type = "submit"/>
       </form>
    </body>
