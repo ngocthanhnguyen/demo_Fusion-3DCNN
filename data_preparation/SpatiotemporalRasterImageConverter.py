@@ -1,6 +1,7 @@
 import numpy as np
 import os
-from config import *
+import fnmatch
+from .config import *
 
 class SpatiotemporalRasterImageConverter:
   def __init__(self):

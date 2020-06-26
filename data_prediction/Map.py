@@ -1,5 +1,5 @@
 import numpy as np
-from data_config import *
+from .data_config import *
 import folium
 import folium.plugins as plugins
 from folium.plugins import TimeSliderChoropleth, TimestampedGeoJson
@@ -77,7 +77,7 @@ class Map:
     return m
     
   def createPredictiveMap(self, features, areaId, cmap, outputPath):
-    htmlFile = outputPath + 'folium_map_congested_' + str(areaId) + '.html'
+    htmlFile = outputPath + 'map_congested_' + str(areaId) + '.html'
     m = self.createBaseMap(areaId)
     TimestampedGeoJson(
         {'type': 'FeatureCollection',

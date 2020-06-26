@@ -9,3 +9,5 @@ def main():
   print('SpatiotemporalRasterImageConverter')
   seqConverter = SpatiotemporalRasterImageConverter()
   seqConverter.convert()
+
+main()

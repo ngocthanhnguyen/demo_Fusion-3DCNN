@@ -1,20 +1,18 @@
 ## Importing the libraries
 import numpy as np
 import os
-from config import *
-from data_utils.DataParser import *
-from data_utils.DataReader import *
-from data_utils.DataScaler import *
-from jpmesh.jpmesh import *
+from .data_utils import DataParser, DataReader, DataScaler
+from .jpmesh import jpmesh
+from .config import *
 
 class TimeSeries2RasterImageConverter:
   def __init__(self):
-    self.dp = DataParser()
-    self.ds = DataScaler()
+    self.dp = DataParser.DataParser()
+    self.ds = DataScaler.DataScaler()
     
   def convert(self, data_file, starting_time, offset, num_steps):
     # read and parse data
-    self.dr = DataReader(data_file, DATA_READ['idx'])
+    self.dr = DataReader.DataReader(data_file, DATA_READ['idx'])
     self.dr.read(delimiter='\t')
     data = self.dr.getData()
     data = self._parse_data(data)
@@ -26,7 +24,8 @@ class TimeSeries2RasterImageConverter:
       starting_time = self._determine_next_time(starting_time, offset)
       raster_img = self._generate_factor_map(data, starting_time)
       self._dump_factor(WD['output']['extract_raster'] + str(starting_time), raster_img)
-      datetime_filehandler.write(starting_time + '\n')
+      datetime_filehandler.write(str(starting_time) + '\n')
+      print('TimeSeries2RasterImageConverter:', WD['output']['extract_raster'] + str(starting_time))
       
     datetime_filehandler.close()
 
@@ -59,7 +58,7 @@ class TimeSeries2RasterImageConverter:
 
       # get center coordination of each mesh
       meshcode = data[j, DATA_READ['name'].index('meshcode')]
-      mesh = parse_mesh_code(str(meshcode))
+      mesh = jpmesh.parse_mesh_code(str(meshcode))
       mesh_center = mesh.south_west + (mesh.size / 8.0)
       latitude = mesh_center.lat.degree
       longitude = mesh_center.lon.degree

@@ -2,9 +2,9 @@ import numpy as np
 import os, fnmatch
 import matplotlib.pyplot as plt
 from keras import *
-from data_config import *
+from .data_config import *
 import seaborn as sns
-from util import *
+from .util import *
 
 import os
 os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"   # see issue #152
@@ -16,17 +16,15 @@ os.environ["CUDA_VISIBLE_DEVICES"] = ""
 dataset_path = '/mnt/7E3B52AF2CE273C0/Thesis/dataset/dataset/s6_4h_s6_4h'
 WD = {
     'input': {
-      'model_weights' : '/mnt/d/00_Backup_Thesis/00_defence/train_mdls_Fusion-3DCNN/6steps_4hours_6steps_4hours/Fusion-3DCNN_CPA/epoch_15000.h5'
-      
-      'datetime_data' : '../00_data_output/raster/datetime_data.csv'
+      'model_weights' : '/mnt/d/00_Backup_Thesis/00_defence/train_mdls_Fusion-3DCNN/6steps_4hours_6steps_4hours/Fusion-3DCNN_CPA/epoch_15000.h5','datetime_data' : './00_data_output/raster/datetime_data.csv'
     },    
     'output' : {
-      'predictive_map' : '../00_data_output/predicted/'
+      'predictive_map' : './templates/predicted/'
     }
 }
 
 REDUCED_WEIGHT = 0.75
-DATA_FILE = '../00_data_output/3draster/hist_data.npz'
+DATA_FILE = './00_data_output/3draster/hist_data.npz'
 VISUALIZATION_TYPE = 'folium' # option: ['sns', 'folium']
 
 ###########################################
@@ -170,42 +168,29 @@ def buildCompleteModel(imgShape, filtersDict, kernelSizeDict):
 
     return predictionModel
 
-###############################
-## Define model architecture ##
-###############################
-imgShape = (6,60,80,1)
-filtersDict = {}; filtersDict['factors'] = [128, 128, 256]; filtersDict['factors_fusion'] = [256, 256, 256, 128]; filtersDict['prediction'] = [64, 1]
-kernelSizeDict = {}; kernelSizeDict['factors'] = (3,3,3); kernelSizeDict['factors_fusion'] = (3,3,3); kernelSizeDict['prediction'] = (3,3,3)
+def load_and_predict():
+  imgShape = (6,60,80,1)
+  filtersDict = {}; filtersDict['factors'] = [128, 128, 256]; filtersDict['factors_fusion'] = [256, 256, 256, 128]; filtersDict['prediction'] = [64, 1]
+  kernelSizeDict = {}; kernelSizeDict['factors'] = (3,3,3); kernelSizeDict['factors_fusion'] = (3,3,3); kernelSizeDict['prediction'] = (3,3,3)
 
-predictionModel = buildCompleteModel(imgShape, filtersDict, kernelSizeDict)
-predictionModel.summary()
-utils.plot_model(predictionModel,to_file='architecture.png',show_shapes=True)
-print('build model')
+  predictionModel = buildCompleteModel(imgShape, filtersDict, kernelSizeDict)
+  predictionModel.load_weights(WD['input']['model_weights'])
+  print('build_and_load_model')
 
-#################################
-## Load weights for prediction ##
-#################################
-predictionModel = buildCompleteModel(imgShape, filtersDict, kernelSizeDict)
-predictionModel.load_weights(WD['input']['model_weights'])
-print('load weights')
-
-################
-## Prediction ##
-################
-for areaId in range(len(BOUNDARY_AREA)):
-  print(DATA_FILE, areaId)
-  # load and predict
-  data = loadData(DATA_FILE, areaId)
-  predicted = predictionModel.predict(data)
-  predicted = predicted[0] * MAX_FACTOR['Input_congestion']
-  
-  print_historical_statistics(data)
-  if 1 == 0:
-    print_preditive_acc(gt, pd)
-  
-  gt_congestion = np.array([0])
-  scale_max = max(20, np.max(predicted))  
-  # export_predictive_map_sns(predicted, scale_max, areaId, WD['output']')
-  
-  export_predictive_map_folium(predicted, areaId, WD['output']['predictive_map'])
-  # visualization
+  for areaId in range(len(BOUNDARY_AREA)):
+    print(DATA_FILE, areaId)
+    # load and predict
+    data = loadData(DATA_FILE, areaId)
+    predicted = predictionModel.predict(data)
+    predicted = predicted[0] * MAX_FACTOR['Input_congestion']
+    
+    print_historical_statistics(data)
+    if 1 == 0:
+      print_preditive_acc(gt, pd)
+    
+    gt_congestion = np.array([0])
+    scale_max = max(20, np.max(predicted))  
+    # export_predictive_map_sns(predicted, scale_max, areaId, WD['output']')
+    
+    export_predictive_map_folium(predicted, areaId, WD['output']['predictive_map'])
+    # visualization

@@ -1,11 +1,11 @@
 WD = {
     'input': {
         'extract_raster': '/mnt/7E3B52AF2CE273C0/Thesis/backup_main_folder/Final-Thesis-Dataset/csv_files/',
-        'prep_3draster' : '../00_data_output/raster/'
+        'prep_3draster' : './00_data_output/raster/'
     },
     'output': {
-        'extract_raster': '../00_data_output/raster/',
-        'prep_3draster' : '../00_data_output/3draster/'
+        'extract_raster': './00_data_output/raster/',
+        'prep_3draster' : './00_data_output/3draster/'
     }
 }
 
