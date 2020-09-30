@@ -1,0 +1,79 @@
+<html>
+  <head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+  </head>
+  
+<script type="text/javascript">
+    function ShowLoading(e) {
+        var div = document.createElement('div');
+        var img = document.createElement('img');
+        img.src = "{{ url_for('static', filename='tenor.gif') }}"; 
+        div.innerHTML = "Đang xử lý...<br />";
+        div.style.cssText = 'position: fixed; top: 5%; left: 40%; z-index: 5000; width: 722px; text-align: center; background: #EDDBB0; border: 1px solid #000';
+        <!-- div.appendChild(img); -->
+        document.body.appendChild(div);
+        return true;
+        // These 2 lines cancel form submission, so only use if needed.
+        //window.event.cancelBubble = true;
+        //e.stopPropagation();
+    }
+</script>
+
+   <body>
+   <!-- <h1 style="text-align:center">ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH</h1> -->
+   <!-- <h1 style="text-align:center">TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN</h1> -->
+   <!-- <h1 style="text-align:center">HỆ THỐNG DỰ BÁO TÌNH HÌNH ÙN TẮC GIAO THÔNG DÀI HẠN SỬ DỤNG NHIỀU NGUỒN DỮ LIỆU QUAN TRẮC ĐÔ THỊ</h1> -->
+      <div style="margin-left: 25%;">
+      <form action = "http://localhost:5000/result" method = "POST" 
+         enctype = "multipart/form-data" onsubmit="ShowLoading()">
+         <table border=1>
+         <tr>
+           <td> Tập tin dữ liệu đầu vào: </td> <td><input type = "file" name = "file" /></td>
+         </tr>
+         <tr>
+           <td> Thời điểm bắt đầu tham khảo dữ liệu: </td> <td> <input type="datetime-local" name = "start_time" value="20140503002000" /> </td>
+         </tr>
+         <tr>
+           <td> Số mốc thời gian tham khảo dữ liệu: </td> 
+           <td> 
+            <select name="num_steps">
+              <option value="6">6</option>
+            </select>
+           </td>           
+         </tr>
+         <tr>
+           <td> Khoảng cách thời gian tham khảo: </td> 
+           <td> 
+            <select name="offset_ref">
+              <option value="3000">30 phút</option>
+              <option value="6000">1 giờ</option>
+              <option value="40000">4 giờ</option>
+            </select>
+           </td>
+         </tr>
+         <tr>
+           <td> Số mốc thời gian dự báo: </td> 
+           <td> 
+            <select name="predicted_steps">
+              <option value="3">3</option>
+              <option value="6">6</option>
+            </select>
+           </td>
+         </tr>
+         <tr>
+           <td> Khoảng cách thời gian dự báo: </td> 
+           <td> 
+            <select name="offset_pred">
+              <option value="3000">30 phút</option>
+              <option value="6000">1 giờ</option>
+              <option value="40000">4 giờ</option>
+            </select>
+           </td>
+         </tr>
+         </table>
+         </br>
+         <input type = "submit" value="Lấy kết quả dự báo"/>
+      </form>
+      </div>
+   </body>
+</html>
