@@ -16,13 +16,19 @@ os.environ["CUDA_VISIBLE_DEVICES"] = ""
 dataset_path = '/mnt/7E3B52AF2CE273C0/Thesis/dataset/dataset/s6_4h_s6_4h'
 WD = {
     'input': {
-      'model_weights' : '/mnt/d/00_Backup_Thesis/00_defence/train_mdls_Fusion-3DCNN/6steps_4hours_6steps_4hours/Fusion-3DCNN_CPA/epoch_15000.h5','datetime_data' : './00_data_output/raster/datetime_data.csv'
+      'model_weights' : {
+        '6_40000_6_40000': '/mnt/d/00_Backup_Thesis/00_defence/train_mdls_Fusion-3DCNN/6steps_4hours_6steps_4hours/Fusion-3DCNN_CPA_SNS_075/epoch_15000.h5',
+        '6_6000_3_6000': '/mnt/d/00_Backup_Thesis/00_defence/train_mdls_Fusion-3DCNN/6steps_1hour_3steps_1hour/Fusion-3DCNN_CPA_SNS_075/epoch_15000.h5',
+        '6_3000_3_3000': '/mnt/d/00_Backup_Thesis/00_defence/train_mdls_Fusion-3DCNN/6steps_30mins_3steps_30mins/Fusion-3DCNN_CPA_SNS_025/epoch_15000.h5'
+      },
+      'datetime_data' : './00_data_output/raster/datetime_data.csv'
     },    
     'output' : {
       'predictive_map' : './templates/predicted/'
     }
 }
 
+REDUCE_DIMENSION = False
 REDUCED_WEIGHT = 0.75
 DATA_FILE = './00_data_output/3draster/hist_data.npz'
 VISUALIZATION_TYPE = 'folium' # option: ['sns', 'folium']
@@ -131,7 +137,7 @@ def buildPrediction(orgInputs, filters, kernelSize, lastOutputs=None):
         predictionOutput = layers.Conv3D(filters=filters[i], kernel_size=kernelSize, strides=1, padding='same', activation='relu', 
                                          name='Conv3D_prediction{0}2'.format(counter))(predictionOutput)
     
-    if GLOBAL_SIZE_X[0] == GLOBAL_SIZE_Y[0] * 2:
+    if REDUCE_DIMENSION == True:
         predictionOutput = layers.MaxPooling3D(pool_size=(2,1,1), name='output')(predictionOutput)
 
     predictionOutput = Model(inputs=orgInputs, outputs=predictionOutput)
@@ -168,13 +174,22 @@ def buildCompleteModel(imgShape, filtersDict, kernelSizeDict):
 
     return predictionModel
 
-def load_and_predict():
+def select_trained_data(num_steps, offset_ref, predicted_steps, offset_pred):
+  data_check = str(num_steps) + '_' + str(offset_ref) + '_' + str(predicted_steps) + '_' + str(offset_pred)
+  trained_data_file = WD['input']['model_weights'][data_check]
+  if predicted_steps == num_steps//2:
+    REDUCE_DIMENSION = True
+  return trained_data_file
+  
+def load_and_predict(num_steps, offset_ref, predicted_steps, offset_pred):
+  trained_data_file = select_trained_data(num_steps, offset_ref, predicted_steps, offset_pred)
+  print('select_trained_data:', num_steps, offset_ref, predicted_steps, offset_pred, trained_data_file)
   imgShape = (6,60,80,1)
   filtersDict = {}; filtersDict['factors'] = [128, 128, 256]; filtersDict['factors_fusion'] = [256, 256, 256, 128]; filtersDict['prediction'] = [64, 1]
   kernelSizeDict = {}; kernelSizeDict['factors'] = (3,3,3); kernelSizeDict['factors_fusion'] = (3,3,3); kernelSizeDict['prediction'] = (3,3,3)
 
   predictionModel = buildCompleteModel(imgShape, filtersDict, kernelSizeDict)
-  predictionModel.load_weights(WD['input']['model_weights'])
+  predictionModel.load_weights(trained_data_file)
   print('build_and_load_model')
 
   for areaId in range(len(BOUNDARY_AREA)):
@@ -183,6 +198,7 @@ def load_and_predict():
     data = loadData(DATA_FILE, areaId)
     predicted = predictionModel.predict(data)
     predicted = predicted[0] * MAX_FACTOR['Input_congestion']
+    print('load_and_predict:', predicted.shape)
     
     print_historical_statistics(data)
     if 1 == 0:

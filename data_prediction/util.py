@@ -89,6 +89,7 @@ def export_predictive_map_folium(predicted, areaId, outputPath):
   # print('DATETIME:',DATETIME)
   
   # prepare data for predictive map
+  print('createGeoJsonFeatures:', DATETIME)
   geojsonFeatures = map.createGeoJsonFeatures(df, DATETIME)
   map.createPredictiveMap(geojsonFeatures, areaId, cmap, outputPath)
 

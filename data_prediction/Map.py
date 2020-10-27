@@ -47,6 +47,7 @@ class Map:
   def createGeoJsonFeatures(self, df, time_array):
     features = []
     for _, row in df.iterrows():
+      print(row['time'], time_array)
       feature = {
           'type': 'Feature',
           'geometry': {

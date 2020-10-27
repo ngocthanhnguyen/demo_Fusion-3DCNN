@@ -32,7 +32,7 @@ def save_uploaded_file():
       calculate_predicted_time(start_time, offset_pred, num_steps, predicted_steps)
       
       start = time.time()      
-      predict(savepath, start_time, num_steps, offset_ref)      
+      predict(savepath, start_time, num_steps, offset_ref, predicted_steps, offset_pred)      
       stop = time.time()
       print('Execution time:',stop-start)
       return render_template('output.html')
@@ -60,7 +60,7 @@ def format_datetime(datetime_input):
     datetime_input += '00'
     return datetime_input
       
-def predict(savepath, start_time, num_steps, offset_ref):
+def predict(savepath, start_time, num_steps, offset_ref, predicted_steps, offset_pred):
     tsConverter = TimeSeries2RasterImageConverter.TimeSeries2RasterImageConverter()
     print(savepath, start_time, num_steps, offset_ref)      
     tsConverter.convert([savepath], start_time, offset_ref ,num_steps)
@@ -68,7 +68,7 @@ def predict(savepath, start_time, num_steps, offset_ref):
     seqConverter.convert()
     
     print('Prediction')
-    Fusion_3DCNN_CPA_SNS.load_and_predict()
+    Fusion_3DCNN_CPA_SNS.load_and_predict(num_steps, offset_ref, predicted_steps, offset_pred)
     
     html_text = '<html><body>' + '\n'
     html_path = './templates/predicted/'
@@ -87,9 +87,6 @@ def predict(savepath, start_time, num_steps, offset_ref):
     filehanlder.write(html_text)
     filehanlder.close()
     
-@app.route("/getimage")
-def get_img():
-    return "a.jpg"
     
 def calculate_predicted_time(start_time, offset, historical_steps, predicted_steps):
   for _ in range(historical_steps):
@@ -124,7 +121,7 @@ def determine_next_time(curr_time, offset):
   yyyy = next_time
   
   if MM >= 60:
-    MM -= 0
+    MM -= 60
     HH += 1
    
   if HH >= 24:
