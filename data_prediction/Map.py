@@ -47,7 +47,6 @@ class Map:
   def createGeoJsonFeatures(self, df, time_array):
     features = []
     for _, row in df.iterrows():
-      print(row['time'], time_array)
       feature = {
           'type': 'Feature',
           'geometry': {
@@ -77,14 +76,20 @@ class Map:
     m = folium.Map(location=self.relativeloc2Coordinate(MAP['center']['zone' + str(areaId+1)]), zoom_start=12.7)
     return m
     
-  def createPredictiveMap(self, features, areaId, cmap, outputPath):
+  def createPredictiveMap(self, features, areaId, cmap, outputPath, period_str):
+    if period_str == 40000:
+      period_set = 'PT4H'
+    elif period_str == 6000:
+      period_set = 'PT1H'
+    elif period_str == 3000:  
+      period_set = 'PT30M'
     htmlFile = outputPath + 'map_congested_' + str(areaId) + '.html'
     m = self.createBaseMap(areaId)
     TimestampedGeoJson(
         {'type': 'FeatureCollection',
         'features': features}
         , transition_time=1000
-        , period='PT4H'
+        , period=period_set
         , add_last_point=True
         , auto_play=True
         , loop=True

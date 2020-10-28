@@ -7,6 +7,11 @@ from data_preparation.jpmesh import *
 from data_prediction import Fusion_3DCNN_CPA_SNS
 import os
 import time
+import logging
+import os
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'  # FATAL
+logging.getLogger('tensorflow').setLevel(logging.FATAL)
 app = Flask(__name__)
 
 @app.route('/index')
@@ -101,7 +106,7 @@ def calculate_predicted_time(start_time, offset, historical_steps, predicted_ste
     time_str = str(start_time)
     time_str = time_str[0:4] + '-' + time_str[4:6] + '-' + time_str[6:8] + ' ' + time_str[8:10] + ':' + time_str[10:12] + ':' + time_str[12:14]
     filehanlder.write(time_str + '\n')   
-    
+  filehanlder.write('s' + str(offset))
   filehanlder.close()
   
   

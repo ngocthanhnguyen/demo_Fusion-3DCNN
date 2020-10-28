@@ -123,6 +123,7 @@ def buildCNN(cnnInputs, imgShape, filters, kernelSize, factorName, isFusion=Fals
     return cnnModel
     
 def buildPrediction(orgInputs, filters, kernelSize, lastOutputs=None):
+    global REDUCE_DIMENSION
     predictionOutput = None
     for i in range(len(filters)):
         counter = i + 1
@@ -175,9 +176,10 @@ def buildCompleteModel(imgShape, filtersDict, kernelSizeDict):
     return predictionModel
 
 def select_trained_data(num_steps, offset_ref, predicted_steps, offset_pred):
+  global REDUCE_DIMENSION
   data_check = str(num_steps) + '_' + str(offset_ref) + '_' + str(predicted_steps) + '_' + str(offset_pred)
   trained_data_file = WD['input']['model_weights'][data_check]
-  if predicted_steps == num_steps//2:
+  if predicted_steps == num_steps//2:    
     REDUCE_DIMENSION = True
   return trained_data_file
   
@@ -190,7 +192,7 @@ def load_and_predict(num_steps, offset_ref, predicted_steps, offset_pred):
 
   predictionModel = buildCompleteModel(imgShape, filtersDict, kernelSizeDict)
   predictionModel.load_weights(trained_data_file)
-  print('build_and_load_model')
+  # predictionModel.summary()
 
   for areaId in range(len(BOUNDARY_AREA)):
     print(DATA_FILE, areaId)
@@ -198,15 +200,11 @@ def load_and_predict(num_steps, offset_ref, predicted_steps, offset_pred):
     data = loadData(DATA_FILE, areaId)
     predicted = predictionModel.predict(data)
     predicted = predicted[0] * MAX_FACTOR['Input_congestion']
-    print('load_and_predict:', predicted.shape)
     
     print_historical_statistics(data)
     if 1 == 0:
-      print_preditive_acc(gt, pd)
-    
-    gt_congestion = np.array([0])
-    scale_max = max(20, np.max(predicted))  
-    # export_predictive_map_sns(predicted, scale_max, areaId, WD['output']')
+      print_preditive_acc(gt, pd)    
+      gt_congestion = np.array([0])
+      scale_max = max(20, np.max(predicted))  
     
     export_predictive_map_folium(predicted, areaId, WD['output']['predictive_map'])
-    # visualization

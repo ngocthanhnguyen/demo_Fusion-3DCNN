@@ -6,15 +6,15 @@ from data_prediction import Fusion_3DCNN_CPA_SNS
 import os
 
 def main():
-  print('TimeSeries2RasterImageConverter')
+  # print('TimeSeries2RasterImageConverter')
   tsConverter = TimeSeries2RasterImageConverter.TimeSeries2RasterImageConverter()
   tsConverter.convert(['./data_preparation/20140503.csv'], 20140503002000, 40000 ,6)
 
-  print('SpatiotemporalRasterImageConverter')
+  # print('SpatiotemporalRasterImageConverter')
   seqConverter = SpatiotemporalRasterImageConverter.SpatiotemporalRasterImageConverter()
   seqConverter.convert()
   
-  print('Prediction')
+  # print('Prediction')
   Fusion_3DCNN_CPA_SNS.load_and_predict()
   
   html_text = '<html><body>' + '\n'

@@ -85,12 +85,14 @@ def export_predictive_map_folium(predicted, areaId, outputPath):
   lines = filehandler.readlines()
   filehandler.close()
   for line in lines:
-    DATETIME.append(line.strip())
+    if 's' not in line:
+      DATETIME.append(line.strip())
+    else:
+      period = int(line.strip()[1:])
   # print('DATETIME:',DATETIME)
   
   # prepare data for predictive map
-  print('createGeoJsonFeatures:', DATETIME)
   geojsonFeatures = map.createGeoJsonFeatures(df, DATETIME)
-  map.createPredictiveMap(geojsonFeatures, areaId, cmap, outputPath)
+  map.createPredictiveMap(geojsonFeatures, areaId, cmap, outputPath, period)
 
   
