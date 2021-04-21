@@ -20,21 +20,21 @@
 </script>
 
    <body>
-   <!-- <h1 style="text-align:center">ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH</h1> -->
-   <!-- <h1 style="text-align:center">TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN</h1> -->
-   <!-- <h1 style="text-align:center">HỆ THỐNG DỰ BÁO TÌNH HÌNH ÙN TẮC GIAO THÔNG DÀI HẠN SỬ DỤNG NHIỀU NGUỒN DỮ LIỆU QUAN TRẮC ĐÔ THỊ</h1> -->
+   <h1 style="text-align:center">ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH</h1>
+   <h1 style="text-align:center">TRƯỜNG ĐẠI HỌC CÔNG NGHỆ THÔNG TIN</h1>
+   <h1 style="text-align:center">HỆ THỐNG DỰ BÁO TÌNH HÌNH KẸT XE DÀI HẠN</h1>
       <div style="margin-left: 25%;">
       <form action = "http://localhost:5000/result" method = "POST" 
          enctype = "multipart/form-data" onsubmit="ShowLoading()">
          <table border=1>
          <tr>
-           <td> Tập tin dữ liệu đầu vào: </td> <td><input type = "file" name = "file" /></td>
+           <td> Tập tin dữ liệu đầu vào </td> <td><input type = "file" name = "file" /></td>
          </tr>
          <tr>
-           <td> Thời điểm bắt đầu tham khảo dữ liệu: </td> <td> <input type="datetime-local" name = "start_time" value="20140503002000" /> </td>
+           <td> Thời gian bắt đầu tham khảo dữ liệu </td> <td> <input type="datetime-local" name = "start_time" value="20140503002000" /> </td>
          </tr>
          <tr>
-           <td> Số mốc thời gian tham khảo dữ liệu: </td> 
+           <td> Số lượng mốc thời gian tham khảo dữ liệu </td> 
            <td> 
             <select name="num_steps">
               <option value="6">6</option>
@@ -42,7 +42,7 @@
            </td>           
          </tr>
          <tr>
-           <td> Khoảng cách thời gian tham khảo: </td> 
+           <td> Khoảng cách giữa hai mốc thời gian tham khảo dữ liệu </td> 
            <td> 
             <select name="offset_ref">
               <option value="3000">30 phút</option>
@@ -52,7 +52,7 @@
            </td>
          </tr>
          <tr>
-           <td> Số mốc thời gian dự báo: </td> 
+           <td> Số lượng mốc thời gian dự báo dữ liệu </td> 
            <td> 
             <select name="predicted_steps">
               <option value="3">3</option>
@@ -61,7 +61,7 @@
            </td>
          </tr>
          <tr>
-           <td> Khoảng cách thời gian dự báo: </td> 
+           <td> Khoảng cách giữa hai mốc thời gian dự báo dữ liệu </td> 
            <td> 
             <select name="offset_pred">
               <option value="3000">30 phút</option>

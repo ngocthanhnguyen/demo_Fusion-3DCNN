@@ -81,7 +81,7 @@ def predict(savepath, start_time, num_steps, offset_ref, predicted_steps, offset
     map_files = sorted(map_files)
     i = 1
     for map_file in map_files:
-      html_text += '<h1>Tình hình ùn tắc giao thông được dự đoán ở khu vực {0}</h1>'.format(i)
+      html_text += '<h1>Tình hình kẹt xe được dự đoán tại tiểu vùng {0}</h1>'.format(i)
       i+=1
       #html_text += '<h1>{0}</h1>'.format(map_file)
       html_text += '<iframe style="display:block; width: 95%; height:100%;" src="{0}"'.format('/predicted/' + map_file.split('.')[0]) + '></iframe>' '\n'

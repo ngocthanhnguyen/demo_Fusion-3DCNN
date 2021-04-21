@@ -202,9 +202,5 @@ def load_and_predict(num_steps, offset_ref, predicted_steps, offset_pred):
     predicted = predicted[0] * MAX_FACTOR['Input_congestion']
     
     print_historical_statistics(data)
-    if 1 == 0:
-      print_preditive_acc(gt, pd)    
-      gt_congestion = np.array([0])
-      scale_max = max(20, np.max(predicted))  
     
     export_predictive_map_folium(predicted, areaId, WD['output']['predictive_map'])

@@ -41,7 +41,7 @@ class Map:
   def createColorSet(self, min_length, max_length):
     from branca.colormap import linear
     cmap = linear.Reds_09.scale(min_length, max_length)
-    cmap.caption = 'Congested length (m)'
+    cmap.caption = 'Độ dài kẹt xe trung bình (đo bằng mét)'
     return cmap
 
   def createGeoJsonFeatures(self, df, time_array):

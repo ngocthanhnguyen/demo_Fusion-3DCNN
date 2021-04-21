@@ -17,21 +17,17 @@ class TimeSeries2RasterImageConverter:
     data = self.dr.getData()
     data = self._parse_data(data)
     
-    datetime_filehandler = open(WD['output']['extract_raster'] + 'datetime_data.csv', 'w')
-    
     # convert to raster images and save
     i = 1
     while True:
       raster_img = self._generate_factor_map(data, starting_time)
       self._dump_factor(WD['output']['extract_raster'] + str(starting_time), raster_img)
-      # datetime_filehandler.write(str(starting_time) + '\n')
       print('TimeSeries2RasterImageConverter:', WD['output']['extract_raster'] + str(starting_time))
       i += 1
       if i > num_steps:
         break
       starting_time = self._determine_next_time(starting_time, offset)
       
-    datetime_filehandler.close()
 
   def _parse_data(self, data):
     # datetime

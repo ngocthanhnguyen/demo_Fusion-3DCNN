@@ -7,6 +7,7 @@ from shapely.geometry import Polygon
 import geopandas
 import pandas
 from datetime import datetime
+import os
 
 def print_historical_statistics(data):
   data_congestion     = np.sum(data['Input_congestion'] * MAX_FACTOR['Input_congestion'])
@@ -81,7 +82,8 @@ def export_predictive_map_folium(predicted, areaId, outputPath):
   
   # get predicted timestamps
   DATETIME = []
-  filehandler = open('./00_data_output/predicted/time.csv', 'r')
+  timeArrayDataFile = './00_data_output/predicted/time.csv' 
+  filehandler = open(timeArrayDataFile, 'r')
   lines = filehandler.readlines()
   filehandler.close()
   for line in lines:
@@ -89,10 +91,7 @@ def export_predictive_map_folium(predicted, areaId, outputPath):
       DATETIME.append(line.strip())
     else:
       period = int(line.strip()[1:])
-  # print('DATETIME:',DATETIME)
   
   # prepare data for predictive map
   geojsonFeatures = map.createGeoJsonFeatures(df, DATETIME)
   map.createPredictiveMap(geojsonFeatures, areaId, cmap, outputPath, period)
-
-  
